@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
             goToNextLevel();
         }
     }
-
     private void loadInterstitial() {
         // Disable the next level button and load the ad.
         mNextLevelButton.setEnabled(false);

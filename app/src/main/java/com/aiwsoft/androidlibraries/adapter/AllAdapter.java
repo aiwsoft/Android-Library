@@ -40,7 +40,6 @@ public class AllAdapter extends RecyclerView.Adapter<AllAdapter.DataHolder> {
         return new AllAdapter.DataHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(AllAdapter.DataHolder holder, int position) {
         String item = displayedList.get(position);

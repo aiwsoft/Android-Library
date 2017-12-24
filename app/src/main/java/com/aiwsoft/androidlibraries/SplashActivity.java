@@ -11,7 +11,6 @@ import com.aiwsoft.androidlibraries.custome.CustomActivity;
  */
 
 public class SplashActivity extends CustomActivity {
-
     @Override
     protected void onCreate(Bundle arg0) {
         super.onCreate(arg0);

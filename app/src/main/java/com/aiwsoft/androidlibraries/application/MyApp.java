@@ -115,7 +115,6 @@ public class MyApp extends Application {
         return false;
     }
 
-
     public static void popMessage(String titleMsg, String errorMsg,
                                   Context context) {
         // pop error message

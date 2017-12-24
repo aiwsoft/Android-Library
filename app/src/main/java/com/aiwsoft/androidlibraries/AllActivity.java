@@ -77,7 +77,6 @@ public class AllActivity extends CustomActivity {
     private Context getContext() {
         return AllActivity.this;
     }
-
     private SearchView searchView;
 
     @Override

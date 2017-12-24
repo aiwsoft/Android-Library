@@ -151,7 +151,6 @@ public class CustomActivity extends AppCompatActivity implements
         return v;
     }
 
-    //
     public void postCallJsonObject(Context c, String url, JSONObject params, String loadingMsg, final int callNumber) {
         if (!TextUtils.isEmpty(loadingMsg))
             MyApp.spinnerStart(c, loadingMsg);

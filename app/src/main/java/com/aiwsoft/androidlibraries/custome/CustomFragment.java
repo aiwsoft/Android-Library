@@ -11,7 +11,6 @@ public class CustomFragment extends Fragment implements View.OnClickListener {
 //    private ResponseCallback responseCallback;
     public CustomActivity parent;
 
-    //    private Bundle arg;
     protected CustomFragment THIS;
     public View root;
 

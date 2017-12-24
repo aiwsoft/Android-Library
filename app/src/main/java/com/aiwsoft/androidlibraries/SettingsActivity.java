@@ -159,7 +159,7 @@ public class SettingsActivity extends CustomActivity {
         public void updateDrawState(TextPaint ds) {
 
             ds.setColor(getResources().getColor(R.color.blue));
-            ds.setUnderlineText(true); // set to false to remove underline
+            ds.setUnderlineText(true);
         }
     }
 
