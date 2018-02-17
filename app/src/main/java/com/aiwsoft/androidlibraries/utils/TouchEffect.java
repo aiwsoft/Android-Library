@@ -23,7 +23,7 @@ public class TouchEffect implements OnTouchListener
 
 		if (event.getAction() == MotionEvent.ACTION_DOWN)
 		{
-			v.setAlpha(0.7f);
+			v.setAlpha(0.8f);
 		}
 		else if (event.getAction() == MotionEvent.ACTION_UP
 				|| event.getAction() == MotionEvent.ACTION_CANCEL)

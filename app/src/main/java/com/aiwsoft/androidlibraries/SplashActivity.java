@@ -18,7 +18,7 @@ public class SplashActivity extends CustomActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashActivity.this, AllActivity.class));
+                startActivity(new Intent(SplashActivity.this, DrawerActivity.class));
                 finish();
             }
         }, 2000);

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_whats_app"
+            android:title="What's Android Library" />
+        <!--            android:icon="@drawable/ic_menu_camera"
+-->
+        <item
+            android:id="@+id/nav_gallery"
+            android:title="Share App" />
+        <!--            android:icon="@drawable/ic_menu_gallery"
+-->
+        <item
+            android:id="@+id/nav_settings"
+            android:title="Settings" />
+
+        <!--<item-->
+            <!--android:id="@+id/nav_ads_free"-->
+            <!--android:title="Go Ads Free" />-->
+        <!--            android:icon="@drawable/ic_menu_slideshow"
+-->
+
+        <!--            android:icon="@drawable/ic_menu_manage"
+-->
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:title="Share" />
+
+            <item
+                android:id="@+id/nav_rate"
+                android:title="Rate App" />
+            <!--                android:icon="@drawable/ic_menu_share"
+            -->
+            <item
+                android:id="@+id/nav_about_us"
+                android:title="About Us" />
+            <item
+                android:id="@+id/nav_write_us"
+                android:title="Write Us" />
+            <!--                android:icon="@drawable/ic_menu_send"
+-->
+        </menu>
+    </item>
+
+</menu>

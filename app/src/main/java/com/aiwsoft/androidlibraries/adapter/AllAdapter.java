@@ -1,6 +1,8 @@
 package com.aiwsoft.androidlibraries.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aiwsoft.androidlibraries.AllActivity;
+import com.aiwsoft.androidlibraries.MainFragment;
 import com.aiwsoft.androidlibraries.R;
 import com.aiwsoft.androidlibraries.application.MyApp;
 
@@ -24,10 +27,10 @@ public class AllAdapter extends RecyclerView.Adapter<AllAdapter.DataHolder> {
     private List<String> listdata;
     private List<String> displayedList;
     private LayoutInflater inflater;
-    private Context c;
+    private Fragment c;
 
-    public AllAdapter(List<String> listdata, Context c) {
-        this.inflater = LayoutInflater.from(c);
+    public AllAdapter(List<String> listdata, Fragment c) {
+        this.inflater = LayoutInflater.from(c.getActivity());
         this.listdata = listdata;
         displayedList = listdata;
         this.c = c;
@@ -83,10 +86,10 @@ public class AllAdapter extends RecyclerView.Adapter<AllAdapter.DataHolder> {
         @Override
         public void onClick(View v) {
             if (v == txt_read_more) {
-                MyApp.popMessage("", listdata.get(getLayoutPosition()).split("@@")[2], c);
+                MyApp.popMessage("", listdata.get(getLayoutPosition()).split("@@")[2], c.getActivity());
                 return;
             }
-            ((AllActivity) c).openWebView(displayedList.get(getLayoutPosition()));
+            ((MainFragment) c).openWebView(displayedList.get(getLayoutPosition()));
         }
     }
 

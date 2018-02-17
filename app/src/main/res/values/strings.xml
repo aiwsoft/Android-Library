@@ -14,4 +14,19 @@
     <string name="banner_ad_unit_id">ca-app-pub-7283101109707156/8415821549</string>
     <string name="timeout">timeout error</string>
     <string name="something_wrong">Something went wrong</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
+
+    <array name="menuOptions">
+        <item>My Library</item>
+        <item>About App</item>
+        <item>Share App</item>
+        <item>Rate App</item>
+        <item>Write Us</item>
+        <item>About</item>
+    </array>
 </resources>

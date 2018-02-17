@@ -12,6 +12,21 @@
         android:layout_marginTop="-20dp"
         android:src="@drawable/app_icon" />
 
+    <View
+        android:layout_width="50dp"
+        android:layout_height="300dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/black"></View>
+
+    <View
+        android:layout_width="50dp"
+        android:layout_height="300dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="28dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/black"></View>
+
     <TextView
         android:id="@+id/txt1"
         android:layout_width="match_parent"

@@ -1,26 +1,21 @@
 package com.aiwsoft.androidlibraries;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.aiwsoft.androidlibraries.adapter.AllAdapter;
-import com.aiwsoft.androidlibraries.custome.CustomActivity;
 import com.aiwsoft.androidlibraries.utils.DipPixelHelper;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.thefinestartist.finestwebview.FinestWebView;
 
 import java.util.ArrayList;
@@ -29,92 +24,40 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Created by SONI on 12/20/2017.
+ * A simple {@link Fragment} subclass.
  */
-
-public class AllActivity extends CustomActivity {
+public class MainFragment extends Fragment {
 
     private RecyclerView rv_libs;
     private AllAdapter adapter;
-    private TextView toolbar_title;
-    private Toolbar toolbar;
     private List<String> dataList;
     private int clickDetailsCounter = 0;
-    private AdView mAdView;
-    private InterstitialAd mInterstitialAd;
-    private Handler handler;
 
     @Override
-    protected void onCreate(Bundle b) {
-        super.onCreate(b);
-        setContentView(R.layout.activity_all);
-        rv_libs = findViewById(R.id.rv_libs);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setIcon(R.mipmap.ic_launcher);
-        actionBar.setDisplayShowCustomEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        toolbar_title = toolbar.findViewById(R.id.toolbar_title);
-        toolbar_title.setText("Libraries");
-        actionBar.setTitle("");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        rv_libs = view.findViewById(R.id.rv_libs);
         dataList = getAllData();
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
-        handler = new Handler();
-        handler.postDelayed(adsLoaderCallback, 100);
-
         Collections.sort(dataList, new Comparator<String>() {
             @Override
             public int compare(String text1, String text2) {
                 return text1.compareToIgnoreCase(text2);
             }
         });
-//        adapter = new AllAdapter(dataList, AllActivity.this);
+        adapter = new AllAdapter(dataList, MainFragment.this);
         rv_libs.setLayoutManager(new LinearLayoutManager(getContext()));
-        mInterstitialAd = newInterstitialAd();
-//        rv_libs.setAdapter(adapter);
-        loadInterstitial();
-        handler.postDelayed(fullAdsLoaderCallback, 60000);
-    }
-
-    @Override
-    protected void onDestroy() {
-        handler.removeCallbacks(adsLoaderCallback);
-        handler.removeCallbacks(fullAdsLoaderCallback);
-        super.onDestroy();
-    }
-
-    private Runnable adsLoaderCallback = new Runnable() {
-        @Override
-        public void run() {
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
-            handler.postDelayed(adsLoaderCallback, 5000);
-        }
-    };
-
-    private Runnable fullAdsLoaderCallback = new Runnable() {
-        @Override
-        public void run() {
-            showInterstitial();
-            handler.postDelayed(fullAdsLoaderCallback, 60000);
-        }
-    };
-
-    private Context getContext() {
-        return AllActivity.this;
+        rv_libs.setAdapter(adapter);
+        setHasOptionsMenu(true);
+        return view;
     }
 
     private SearchView searchView;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getActivity().getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) myActionMenuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -132,7 +75,7 @@ public class AllActivity extends CustomActivity {
                 return false;
             }
         });
-        return true;
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -158,11 +101,11 @@ public class AllActivity extends CustomActivity {
     public void openWebView(String data) {
         if (clickDetailsCounter >= 3) {
             clickDetailsCounter = 0;
-            showInterstitial();
+            ((DrawerActivity) getActivity()).showInterstitial();
             return;
         }
         ++clickDetailsCounter;
-        new FinestWebView.Builder(this)
+        new FinestWebView.Builder(getActivity())
                 .titleDefault(data.split("@@")[0])
                 .toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL |
                         AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS)
@@ -174,7 +117,7 @@ public class AllActivity extends CustomActivity {
                 .iconDefaultColorRes(R.color.white)
                 .iconDisabledColorRes(R.color.grey_hex_f0)
                 .iconPressedColorRes(R.color.white)
-                .progressBarHeight(DipPixelHelper.getPixel(this, 3))
+                .progressBarHeight(DipPixelHelper.getPixel(getActivity(), 3))
                 .progressBarColorRes(R.color.colorAccent)
                 .backPressToClose(false)
                 .setCustomAnimations(R.anim.activity_open_enter, R.anim.activity_open_exit, R.anim.activity_close_enter, R.anim.activity_close_exit)
@@ -182,63 +125,269 @@ public class AllActivity extends CustomActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        showInterstitial();
-    }
-
-    private InterstitialAd newInterstitialAd() {
-        InterstitialAd interstitialAd = new InterstitialAd(this);
-        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-        interstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-//                mNextLevelButton.setEnabled(true);
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-//                mNextLevelButton.setEnabled(true);
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Proceed to the next level.
-                goToNextLevel();
-            }
-        });
-        return interstitialAd;
-    }
-
-    private void goToNextLevel() {
-        // Show the next level and reload the ad to prepare for the level after.
-//        mLevelTextView.setText("Level " + (++mLevel));
-        mInterstitialAd = newInterstitialAd();
-        loadInterstitial();
-    }
-
-    private void loadInterstitial() {
-//        MobileAds
-        // Disable the next level button and load the ad.
-//        mNextLevelButton.setEnabled(false);
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        mInterstitialAd.loadAd(adRequest);
-    }
-
-    private void showInterstitial() {
-        // Show the ad if it's ready. Otherwise toast and reload the ad.
-        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        } else {
-//            Toast.makeText(this, "Ad did not load", Toast.LENGTH_SHORT).show();
-            goToNextLevel();
-        }
-    }
-
     private List<String> getAllData() {
         List<String> allData = new ArrayList<>();
+//        allData.add("" +
+//                "@@" +
+//                "@@");
+//        allData.add("" +
+//                "@@" +
+//                "@@"); add more from https://android-arsenal.com/
+        allData.add("White House for Android mobile application" +
+                "@@https://github.com/whitehouse/wh-app-android" +
+                "@@A native Android (Java) app designed to fetch, cache, and display multiple feeds containing articles, photos, and live and on demand video. These are displayed in a web view. Includes support for push notifications. Related to RSS feed.");
+        allData.add("Update Checker" +
+                "@@https://github.com/rampo/UpdateChecker" +
+                "@@UpdateChecker is a class that can be used by Android Developers to increase the number of their apps' updates by showing a \"New update available\" Notification or Dialog.");
+        allData.add("Two Way GridView" +
+                "@@https://github.com/jess-anders/two-way-gridview" +
+                "@@An Android GridView that can be configured to scroll horizontally or vertically.");
+        allData.add("Token AutoComplete" +
+                "@@https://github.com/splitwise/TokenAutoComplete" +
+                "@@TokenAutoComplete is an Android Gmail style token auto-complete text field and filter. It's designed to have an extremely simple API to make it easy for anyone to implement this functionality while still exposing enough customization to let you make it awesome.");
+        allData.add("Smart PNG and JPEG compression" +
+                "@@https://tinypng.com/" +
+                "@@Optimize your images with a perfect balance in quality and file size.");
+        allData.add("TimesSquare for Android" +
+                "@@https://github.com/square/android-times-square" +
+                "@@Standalone Android widget for picking a single date from a calendar view.");
+        allData.add("Telegram messenger for Android" +
+                "@@https://github.com/DrKLO/Telegram" +
+                "@@Telegram is a messaging app with a focus on speed and security. It’s superfast, simple and free. This repo contains the official source code for Telegram App for Android.");
+        allData.add("SuperToasts Library" +
+                "@@https://github.com/JohnPersano/SuperToasts" +
+                "@@The SuperToasts library enhances and builds upon the Android Toast class. This library includes support for context sensitive SuperActivityToasts that can show progress and handle button clicks as well as non-context sensitive SuperToasts which offer many customization options over the standard Android Toast class.");
+        allData.add("Sticky List Headers" +
+                "@@https://github.com/emilsjolander/StickyListHeaders" +
+                "@@StickyListHeaders is an Android library that makes it easy to integrate section headers in your ListView. These section headers stick to the top like in the new People app of Android 4.0 Ice Cream Sandwich. This behavior is also found in lists with sections on iOS devices. This library can also be used without the sticky functionality if you just want section headers.");
+        allData.add("Sprinkles " +
+                "@@https://github.com/emilsjolander/sprinkles" +
+                "@@Sprinkles is a boiler-plate-reduction-library for dealing with databases in android applications. Some would call it a kind of ORM but I don't see it that way. Sprinkles lets SQL do what it is good at, making complex queries. SQL however is a mess (in my opinion) when is comes to everything else. This is why sprinkles helps you with things such as inserting, updating, and destroying models. Sprinkles will also help you with the tedious task of unpacking a cursor into a model. Sprinkles actively supports version 2.3 of Android and above but it should work on older versions as well.");
+        allData.add("Spoon Tool" +
+                "@@http://square.github.io/spoon/" +
+                "@@Android's ever-expanding ecosystem of devices creates a unique challenge to testing applications. Spoon aims to simplify this task by distributing instrumentation test execution and displaying the results in a meaningful way.\n" +
+                "Instead of attempting to be a new form of testing, Spoon makes existing instrumentation tests more useful. Using the application APK and instrumentation APK, Spoon runs the tests on multiple devices simultaneously. Once all tests have completed, a static HTML summary is generated with detailed information about each device and test.");
+        allData.add("Spring Framework" +
+                "@@http://projects.spring.io/spring-framework/" +
+                "@@Core support for dependency injection, transaction management, web applications, data access, messaging, testing and more.");
+        allData.add("Slide Expandable ListView" +
+                "@@https://github.com/tjerkw/Android-SlideExpandableListView" +
+                "@@Not happy with the Android ExpandableListView android offers? Want something like the Spotify app. This library allows you to have custom listview in wich each list item has an area that will slide-out once the users clicks on a certain button.");
+        allData.add("Size Adjusting TextView" +
+                "@@https://github.com/erchenger/SizeAdjustingTextView" +
+                "@@This is based on an open source autosizing textview for Android I found a few weeks ago. The initial approach didn't resize multiple lines and wasn't maintained to keep up with changes in Android. I decided to go ahead and create this as a place to preserve the auto sizing text view as well as giving it a platform for some change and to possibly add some features and functionality.");
+        allData.add("Selector Chapek" +
+                "@@https://github.com/inmite/android-selector-chapek" +
+                "@@This Android Studio plugin automatically generates drawable selectors from appropriately named Android resources.");
+        allData.add("Shimmer for Android" +
+                "@@https://github.com/RomainPiel/Shimmer-android" +
+                "@@This library is DEPRECATED, as I don't have time to mainatin it anymore. But feel free to go through the code and copy that into your project, it still does its job.");
+        allData.add("Android device shake detection." +
+                "@@https://github.com/square/seismic" +
+                "@@Android device shake detection.");
+        allData.add("Scalpel" +
+                "@@https://github.com/JakeWharton/scalpel" +
+                "@@A surgical debugging tool to uncover the layers under your app.");
+        allData.add("Progress Button" +
+                "@@https://github.com/f2prateek/progressbutton" +
+                "@@ProgressButton is a custom progress indicator with a tiny footprint. The default implementation provides a pin progress button as seen on the Android design site. ");
+        allData.add("PhotoView" +
+                "@@https://github.com/chrisbanes/PhotoView" +
+                "@@PhotoView aims to help produce an easily usable implementation of a zooming Android ImageView.");
+        allData.add("Parallax ViewPager" +
+                "@@https://github.com/andraskindler/parallaxviewpager" +
+                "@@Setup requires little extra effort, using the ParallaxViewPager is just like using a standard ViewPager, with the same adapter. Of course, there's no silver bullet - the developer has to supply a background tailored to the current needs (eg. the number of items in the adapter and the size of the ViewPager).");
+        allData.add("Paging GridView" +
+                "@@https://github.com/nicolasjafelle/PagingGridView" +
+                "@@PagingGridView has the ability to add more items on it like PagingListView does. Basically is a GridView with the ability to add more items on it when reaches the end of the list.");
+        allData.add("Muzei Live Wallpaper" +
+                "@@https://github.com/romannurik/muzei" +
+                "@@Muzei is a live wallpaper that gently refreshes your home screen each day with famous works of art. It also recedes into the background, blurring and dimming artwork to keep your icons and widgets in the spotlight. Simply double touch the wallpaper or open the Muzei app to enjoy and explore the artwork in its full glory.");
+        allData.add("MultiChoice Adapter" +
+                "@@https://github.com/ManuelPeinado/MultiChoiceAdapter" +
+                "@@MultiChoiceAdapter is an implementation of ListAdapter which adds support for modal multiple choice selection as in the native Gmail app.");
+        allData.add("Media Chooser" +
+                "@@https://github.com/learnNcode/MediaChooser" +
+                "@@Library to browse & select videos and images from disk.");
+        allData.add("Material design palette" +
+                "@@https://www.materialpalette.com/" +
+                "@@Easy way to create app theme colors.");
+        allData.add("Map Navigator" +
+                "@@https://github.com/tyczj/MapNavigator" +
+                "@@Easy to use library to get and display driving directions on Google Maps v2 in Android. This library gives you directions and displays the route on the map.");
+        allData.add("Magnet" +
+                "@@https://github.com/premnirmal/Magnet" +
+                "@@This library enables you to create a window icon similar to Facebooks chat icon, and also similar to the Link Bubble app. See the demo project for sample implementations.");
+        allData.add("ListView Animations" +
+                "@@https://github.com/nhaarman/ListViewAnimations" +
+                "@@ListViewAnimations is an Open Source Android library that allows developers to easily create ListViews with animations. Feel free to use it all you want in your Android apps provided that you cite this project and include the license in your app.");
+        allData.add("JSON To Java" +
+                "@@http://jsontojava.appspot.com/" +
+                "@@JSON To Java as a Service (JTJaaS) is intended to lighten the burden of java developers who need to create POJOs to parallel a JSON API.");
+        allData.add("Zoom ImageView by touch" +
+                "@@https://github.com/sephiroth74/ImageViewZoom" +
+                "@@ImageViewTouch is an android ImageView widget with zoom and pan capabilities. This is an implementation of the ImageView widget used in the Gallery app of the Android open source project.");
+        allData.add("Image Layout" +
+                "@@https://github.com/ManuelPeinado/ImageLayout" +
+                "@@A layout that arranges its children in relation to a background image. The layout of each child is specified in image coordinates (pixels), and the conversion to screen coordinates is performed automatically.\n" +
+                "The background image is adjusted so that it fills the available space.\n" +
+                "For some applications this might be a useful replacement for the now deprecated AbsoluteLayout.");
+        allData.add("Iconic TextView" +
+                "@@https://github.com/akramfares/IconicTextView" +
+                "@@IconicTextView is an extension of Android TextView class which provides support for some iconic fonts.");
+        allData.add("Google ProgressBar" +
+                "@@https://github.com/jpardogo/GoogleProgressBar" +
+                "@@Android library to display different kind of google related animations for the progressBar.");
+        allData.add("Glass ActionBar" +
+                "@@https://github.com/ManuelPeinado/GlassActionBar" +
+                "@@GlassActionBar is an Android library which implements a glass-like effect for the action bar.\n" +
+                "\n" +
+                "The three most commonly used action bar implementations are supported: stock (API >13), ActionBarCompat and ActionBarSherlock.");
+        allData.add("DiscrollView = Scroll + discover" +
+                "@@https://github.com/flavienlaurent/discrollview" +
+                "@@With DiscrollView, I wanted to import this pattern on Android. This is an 0.0.1 alpha version because you have to do all the transformation work (fade, translation, scale etc) yourself base on a ratio value. I'm going to add some transformation presets (translation from left to right + fade in for example) to make the library more ready to use for lazy developers.");
+        allData.add("Fading ActionBar" +
+                "@@https://github.com/ManuelPeinado/FadingActionBar" +
+                "@@FadingActionBar is a library which implements the cool fading action bar effect that can be seen in the new Play Music app.");
+        allData.add("Edge Effect Override" +
+                "@@https://github.com/AndroidAlliance/EdgeEffectOverride" +
+                "@@EdgeEffectOverride is library designed to help override the blue overscroll_edge and overscroll_glow effects used by the the EdgeEffect class.");
+        allData.add("Circular Floating ActionMenu" +
+                "@@https://github.com/oguzbilgener/CircularFloatingActionMenu" +
+                "@@An animated, customizable circular floating menu for Android, inspired by Path app.");
+        allData.add("Barcode Scanner" +
+                "@@https://github.com/dm77/barcodescanner" +
+                "@@Android library projects that provides easy to use and extensible Barcode Scanner views based on ZXing and ZBar.");
+        allData.add("Staggered GridView" +
+                "@@https://github.com/etsy/AndroidStaggeredGrid" +
+                "@@An Android staggered grid view which supports multiple columns with rows of varying sizes.");
+        allData.add("Code Diet" +
+                "@@http://androidannotations.org/" +
+                "@@AndroidAnnotations is an Open Source framework that speeds up Android development. It takes care of the plumbing, and lets you concentrate on what's really important. By simplifying your code, it facilitates its maintenance.");
+        allData.add("Process Button" +
+                "@@https://github.com/dmytrodanylyk/android-process-button" +
+                "@@Android Buttons With Built-in Progress Meters. ");
+        allData.add("Android Sliding Up Panel" +
+                "@@https://github.com/umano/AndroidSlidingUpPanel" +
+                "@@This library provides a simple way to add a draggable sliding up panel (popularized by Google Music and Google Maps) to your Android application.");
+        allData.add("Memory Size Class for viewing available storage" +
+                "@@http://www.androidsnippets.com/memory-size-class-for-viewing-available-storage.html" +
+                "@@Class used to view available and total storage for internal and external memory. Also does pretty formatting.");
+        allData.add("Advanced Android TextView" +
+                "@@http://chiuki.github.io/advanced-android-textview/#/" +
+                "@@You will get a range of textView resources that you can use for you design patterns, with animations, shadow," +
+                " vector and so on.");
+         allData.add("Android-ActionItemBadge" +
+                "@@https://mikepenz.github.io/Android-ActionItemBadge/" +
+                "@@ActionItemBadge is a library which offers a simple and easy to use method to add a badge to your action item!");
+        allData.add("Adjacent Fragment Pager" +
+                "@@https://github.com/JakeWharton/adjacent-fragment-pager-sample" +
+                "@@Demonstrates how to manage two fragments where portrait displays them in a ViewPager and landscape displays them side-by-side.\n" +
+                "\n" +
+                "Due the shenanigans performed by FragmentPagerAdapter we're forced to write a custom PagerAdapter which handles the instances our selves.\n" +
+                "\n" +
+                "This sample is very-much hard coded and specific to two pages. If you wanted something a bit more robust and generalized it wouldn't be too much work to do so.");
+        allData.add("Android Button Maker" +
+                "@@http://angrytools.com/android/button/" +
+                "@@Android Button Maker is online tool to generate buttons code for Android Apps. Android API provide Drawable Resources where XML file defines geometric shape, including colors, border and gradients.\n" +
+                "These button is generating based on shape drawable XML code which load faster compare to normal PNG buttons. You can customize button properties in setting panel and get source code.");
+        allData.add("Cheatsheet for Graphic Designers" +
+                "@@http://petrnohejl.github.io/Android-Cheatsheet-For-Graphic-Designers/" +
+                "@@Graphic designers aren't programmers and sometimes don't know how to properly prepare graphic assets for developers. This simple cheatsheet should help them to do their job better, and to simplify developers' lives.");
+        allData.add("Android Empty Layout" +
+                "@@https://github.com/alamkanak/Android-Empty-Layout" +
+                "@@A library for showing different types of layouts when a list view is empty. These layouts can be shown when,\n" +
+                "\n" +
+                "the list is loading\n" +
+                "the list has no item to display\n" +
+                "an error occured trying to load items\n" +
+                "Loading animation is also supported.");
+        allData.add("Android Floating Label Widgets" +
+                "@@http://marvinlabs.github.io/android-floatinglabel-widgets/" +
+                "@@A set of input widgets with a hint label that floats when input is not empty.");
+        allData.add("Android Image Slider" +
+                "@@https://github.com/daimajia/AndroidImageSlider" +
+                "@@This is an amazing image slider for the Android platform. I decided to open source this because there is really not an attractive, convenient slider widget in Android.\n" +
+                "\n" +
+                "You can easily load images from an internet URL, drawable, or file. And there are many kinds of amazing animations you can choose.");
+        allData.add("SegmentedButton" +
+                "@@https://github.com/ceryle/SegmentedButton" +
+                "@@Segmented Button is a IOS-like \"Segmented Control\" with animation.\n" +
+                "For more Android-like segmented control, check Radio Real Button.");
+        allData.add("Basics of Angular" +
+                "@@https://codelabs.developers.google.com/codelabs/angular-codelab/index.html?index=..%2F..%2Findex#0" +
+                "@@Angular is a development platform for building mobile and desktop applications. Angular lets you extend HTML's syntax to express your application's components clearly and succinctly. Angular's binding and Dependency Injection eliminate much of the code you would otherwise have to write.");
+        allData.add("Make first app in Kotlin" +
+                "@@https://codelabs.developers.google.com/codelabs/build-your-first-android-app-kotlin/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you'll learn how to build and run your first Android app in Kotlin. If you're looking for the Java version of this codelab, you can go here. Kotlin is a statically typed programming language that runs on the JVM and is completely interoperable with Java. Kotlin is an officially supported language for developing Android apps, along with Java.");
+        allData.add("Build Node.js & Angular 2 Web app using Google Could Platform" +
+                "@@https://codelabs.developers.google.com/codelabs/cloud-cardboard-viewer/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you'll learn how to deploy, monitor, debug, and scale a Node.js & Angular 2 web application on Google Cloud Platform.");
+        allData.add("Google Assistant with Firebase and Dialogflow" +
+                "@@https://codelabs.developers.google.com/codelabs/assistant-codelab/index.html?index=..%2F..%2Findex#0" +
+                "@@Welcome to the Firebase App on Assistant codelab. In this codelab, you'll learn how to use Firebase, Dialogflow, and Google Assistant to create an App on Assistant.");
+        allData.add("Beautiful UIs with Flutter" +
+                "@@https://codelabs.developers.google.com/codelabs/flutter/index.html?index=..%2F..%2Findex#0" +
+                "@@Flutter is an open source SDK for creating high-performance, high-fidelity mobile apps for iOS and Android. The Flutter framework makes it easy for you to build user interfaces that react smoothly in your app, while reducing the amount of code required to synchronize and update your app's view.");
+        allData.add("Beacons! Proximity & Context-aware Apps" +
+                "@@https://codelabs.developers.google.com/codelabs/hello-beacons/index.html?index=..%2F..%2Findex#6" +
+                "@@Bluetooth Low Energy (BLE) Beacons are one-way transmitters that mark important places and objects in a way that users' devices understand. The Google beacon platform provides a set of resources and APIs to make interacting with beacons power-efficient and useful. This allows developers to create context aware and proximity based applications using the high quality signal provided by BLE beacons.");
+        allData.add("Keep sensitive Data safe and private" +
+                "@@https://codelabs.developers.google.com/codelabs/android-storage-permissions/index.html?index=..%2F..%2Findex#0" +
+                "@@Keeping user data and other sensitive information secure and private is a key factor in building trust when using your app. This codelab helps you identify potential risks and take appropriate safeguards toward keeping this information safe.");
+        allData.add("Media streaming with ExoPlayer" +
+                "@@https://codelabs.developers.google.com/codelabs/exoplayer-intro/index.html?index=..%2F..%2Findex#0" +
+                "@@ExoPlayer is the video player running in the Android YouTube app.");
+        allData.add("Notification Channels and Badges" +
+                "@@https://codelabs.developers.google.com/codelabs/notification-channels-java/index.html?index=..%2F..%2Findex#0" +
+                "@@Notification channels and badges are part of the many updates in Android O. Starting in Android O, you divide all of your notifications into different notification channels, depending on the type of notification your app is sending. Using channels, you can easily differentiate between different types of communication and provide different default sounds, importance, icons, and more. Once a notification channel exists on the device, users have full control over the settings per notification channel.");
+        allData.add("Playing music on cars and wearables" +
+                "@@https://codelabs.developers.google.com/codelabs/android-music-player/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you'll learn how to adapt a music player app to work seamlessly on Android Auto and Android Wear using the latest Android media APIs.");
+        allData.add("Removing dependencies on background services" +
+                "@@https://codelabs.developers.google.com/codelabs/android-migrate-to-jobs/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you'll learn how to convert long-running or periodic background services into jobs that can be dispatched by the framework when it's ready. You'll work through a simple case study that demonstrates how to take advantage of either the open source Firebase JobDispatcher library (available on devices with Google Play Services installed) or the Android framework's JobScheduler (available on Lollipop+ devices).");
+        allData.add("Seemless Sign In with Smart Locak" +
+                "@@https://codelabs.developers.google.com/codelabs/android-smart-lock/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you'll learn how to use Smart Lock to provide your users with a simple onboarding process. Presenting a user with a login screen as few times as possible, likely only once.");
+        allData.add("OCR with mobile vision Text api" +
+                "@@https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/index.html?index=..%2F..%2Findex" +
+                "@@Optical Character Recognition (OCR) gives a computer the ability to read text that appears in an image, letting applications make sense of signs, articles, flyers, pages of text, menus, or any other place that text appears as part of an image. The Mobile Vision Text API gives Android developers a powerful and reliable OCR capability that works with most Android devices and won't increase the size of your app.");
+        allData.add("Speedy Mobile checkour with Android Pay" +
+                "@@https://codelabs.developers.google.com/codelabs/android-pay/index.html?index=..%2F..%2Findex#0" +
+                "@@Welcome to the Android Pay codelab! In this codelab you will learn how to set up your Android app to collect payment information from users with just a few clicks. No more flaky credit card forms, this is how your users should be shopping in your application.");
+        allData.add("Translate text with Translation Api" +
+                "@@https://codelabs.developers.google.com/codelabs/cloud-translation-intro/index.html?index=..%2F..%2Findex#0" +
+                "@@The Cloud Translation allows you to translate an arbitrary string into any supported language. Language detection is also available in cases where the source language is unknown.");
+        allData.add("Background location updates in Android 'O'" +
+                "@@https://codelabs.developers.google.com/codelabs/background-location-updates-android-o/index.html?index=..%2F..%2Findex#0" +
+                "@@This codelab covers changes in background location gathering on devices running Android \"O\".");
+        allData.add("Auto Backup" +
+                "@@https://codelabs.developers.google.com/codelabs/android-backup-codelab/index.html?index=..%2F..%2Findex#0" +
+                "@@Users invest a lot of time customizing settings in their apps. Restoring settings data for users when they upgrade to a new device is an important aspect of ensuring a great user experience. It's therefore important to minimize the number of steps that a user has to go through to pick up where they left off on their previous device. You can use Auto Backup to restore settings data even if a user doesn't log in to your app.");
+        allData.add("Add web app to User's home screen" +
+                "@@https://codelabs.developers.google.com/codelabs/add-to-home-screen/index.html?index=..%2F..%2Findex#0" +
+                "@@This codelab will walk you through adding items to a web app that Chrome requires before it will prompt users to add the app to their home screens. Specifically:\n" +
+                "Web app manifest\n" +
+                "Service worker");
+        allData.add("Artistic style transform & other advanced image editing" +
+                "@@https://codelabs.developers.google.com/codelabs/android-style-transfer/index.html?index=..%2F..%2Findex#0" +
+                "@@RenderScript is the parallel computing framework which is widely used on image processing related Android Applications. On the other hand, Deep Neural Net (DNN) based image filters are gaining more and more attention, which traditionally runs on desktops or servers. With the help of CPU & GPU acceleration of RenderScript, these compute intensive applications are now feasible on mobile devices.");
+        allData.add("Weather station with BMP280 sensor hardware" +
+                "@@https://codelabs.developers.google.com/codelabs/androidthings-weatherstation/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you're going to build a weather station that reads environmental temperature and pressure data from a BMP280 sensor, and displays the latest reading locally on the Rainbow HAT.");
+        allData.add("Network security configuration" +
+                "@@https://codelabs.developers.google.com/codelabs/android-network-security-config/index.html?index=..%2F..%2Findex#0" +
+                "@@Although it's commonplace for apps to exchange data over the Internet, often with servers other than those you trust, you need to exercise caution when sending and receiving information that could be sensitive and private.");
+        allData.add("Android N, Quick settings" +
+                "@@https://codelabs.developers.google.com/codelabs/android-n-quick-settings/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you'll learn how to register a custom tile in the Quick Settings of an Android device.");
+        allData.add("Adding leanback to your Android TV app" +
+                "@@https://codelabs.developers.google.com/codelabs/androidtv-adding-leanback/index.html?index=..%2F..%2Findex#0" +
+                "@@In this codelab, you'll learn how to quickly enable a mobile app for Android TV using the Leanback library. At the end of the codelab you can expect to have a UX compliant single apk for mobile devices and Android TV.");
+        allData.add("AdMob Native Advanced Ads" +
+                "@@https://codelabs.developers.google.com/codelabs/admob-native-advanced-feed-android/index.html?index=..%2F..%2Findex#0" +
+                "@@Native is a component-based ad format that gives publishers the freedom to customize how ad assets like headlines and calls to action are presented in their apps. By choosing fonts, colors, and other details for themselves, publishers are able to create natural, unobtrusive ad presentations that can add to a rich user experience.");
         allData.add("Month Calendar (Widget)" +
                 "@@https://github.com/romannurik/Android-MonthCalendarWidget" +
                 "@@A simple example of a responsive Month Calendar app widget for Android.");
@@ -572,6 +721,4 @@ public class AllActivity extends CustomActivity {
                 "@@Easy Video Player is a simple but powerful view that you can plugin to your apps to quickly get video playback working.");
         return allData;
     }
-
-
 }
