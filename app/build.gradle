@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'library'
             keyPassword '111111'
-            storeFile file('D:/Android/aiwsoft/library app/android_library_keystore.jks')
+//            storeFile file('D:/Android/aiwsoft/library app/android_library_keystore.jks')
             storePassword '111111'
         }
     }

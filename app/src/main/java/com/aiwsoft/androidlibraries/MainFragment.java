@@ -719,6 +719,12 @@ public class MainFragment extends Fragment {
         allData.add("Easy Video Player" +
                 "@@https://github.com/afollestad/easy-video-player" +
                 "@@Easy Video Player is a simple but powerful view that you can plugin to your apps to quickly get video playback working.");
+        allData.add("RoadRunner" +
+                "@@https://github.com/glomadrian/RoadRunner" +
+                "Road Runner is a library for android which allow you to make your own loading animation using a SVG image");
+        allData.add("FragmentAnimations" +
+                "@@https://github.com/kakajika/FragmentAnimations" +
+                " 3D animations for support-v4 Fragment transition.");
         return allData;
     }
 }
